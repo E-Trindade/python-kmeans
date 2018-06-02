@@ -28,7 +28,8 @@ class KMeans():
         return self
     
     def predict(self, x):
-        pass
+        group_id, bmu = self._get_bmu(x)
+        return group_id
 
     def _get_bmu(self, x):
         bmu_id, bmu, bmu_dist = 0, self.centroids[0], self.distance_function(self.centroids[0] - x)
