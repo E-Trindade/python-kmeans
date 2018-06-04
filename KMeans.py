@@ -4,6 +4,7 @@ import scipy as scp
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from itertools import cycle, islice
 
 import math
 import multiprocessing 
@@ -150,7 +151,7 @@ class KMeans():
         return s / float(data_count - len(centroids)) * dimensions
     
     def get_sillhouete_score(self, X):
-        with multiprocessing.Pool(processes=5) as pool:
+        with multiprocessing.Pool(processes=2) as pool:
             self.groups = [[] for i in self.centroids]
             for i, x in enumerate(X):
                 bmu_id, _ = self.get_bmu(x)
@@ -236,7 +237,6 @@ def read_data(path):
     x = np.delete(x, 0, axis=1)
     return x
 
-from itertools import cycle, islice
 
 
 np.random.seed(1)
@@ -289,15 +289,15 @@ MAX_CENTROIDS = 7
 
 def get_instances_kmeans(X):
     return [
-         ('1', 'KMeans euclidian_distance, random initialization', KMeans().with_euclidian_distance().initialize_random(CENTROIDS, X)),
-         ('2', 'KMeans euclidian_distance, ++initialization', KMeans().with_euclidian_distance().initialize_plus_plus(CENTROIDS, X)),
-         ('3', 'KMeans cosine_similarity, random initialization', KMeans().with_cosin_similarity().initialize_random(CENTROIDS, X)),
-         ('4', 'KMeans cosine_similarity, ++initialization', KMeans().with_cosin_similarity().initialize_plus_plus(CENTROIDS, X))
+       #  ('1', 'KMeans euclidian_distance, random initialization', KMeans().with_euclidian_distance().initialize_random(CENTROIDS, X)),
+       #  ('2', 'KMeans euclidian_distance, ++initialization', KMeans().with_euclidian_distance().initialize_plus_plus(CENTROIDS, X)),
+       #  ('3', 'KMeans cosine_similarity, random initialization', KMeans().with_cosin_similarity().initialize_random(CENTROIDS, X)),
+       #  ('4', 'KMeans cosine_similarity, ++initialization', KMeans().with_cosin_similarity().initialize_plus_plus(CENTROIDS, X))
     ]
 def get_instances_xmeans(X):
     return [
-         ('5', 'XMeans euclidian_distance', XMeans().with_euclidian_distance().set_centroid_estimation_range(MIN_CENTROIDS, MAX_CENTROIDS)),
-         ('6', 'XMeans cosine_similarity', XMeans().with_cosin_similarity().set_centroid_estimation_range(MIN_CENTROIDS, MAX_CENTROIDS))
+      #   ('5', 'XMeans euclidian_distance', XMeans().with_euclidian_distance().set_centroid_estimation_range(MIN_CENTROIDS, MAX_CENTROIDS)),
+     #    ('6', 'XMeans cosine_similarity', XMeans().with_cosin_similarity().set_centroid_estimation_range(MIN_CENTROIDS, MAX_CENTROIDS))
     ]
 
 files = get_files_in_folder('data/bbc')
@@ -336,9 +336,9 @@ MAX_CENTROIDS = 10
 
 def get_instances_kmeans(X):
     return [
-         ('1', 'KMeans euclidian_distance, random initialization', KMeans().with_euclidian_distance().initialize_random(CENTROIDS, X)),
+         #('1', 'KMeans euclidian_distance, random initialization', KMeans().with_euclidian_distance().initialize_random(CENTROIDS, X)),
          ('2', 'KMeans euclidian_distance, ++initialization', KMeans().with_euclidian_distance().initialize_plus_plus(CENTROIDS, X)),
-         ('3', 'KMeans cosine_similarity, random initialization', KMeans().with_cosin_similarity().initialize_random(CENTROIDS, X)),
+         #('3', 'KMeans cosine_similarity, random initialization', KMeans().with_cosin_similarity().initialize_random(CENTROIDS, X)),
          ('4', 'KMeans cosine_similarity, ++initialization', KMeans().with_cosin_similarity().initialize_plus_plus(CENTROIDS, X))
     ]
 def get_instances_xmeans(X):
@@ -347,7 +347,9 @@ def get_instances_xmeans(X):
          ('6', 'XMeans cosine_similarity', XMeans().with_cosin_similarity().set_centroid_estimation_range(MIN_CENTROIDS, MAX_CENTROIDS))
     ]
 
+from random import shuffle
 files = get_files_in_folder('data/reuters')
+shuffle(files)
 print(files)
 for i, f in enumerate(files):
     print('File', i, 'of', len(files))
@@ -363,6 +365,8 @@ for i, f in enumerate(files):
         
         file_name = 'output/reuters/' + f.split('/')[-1].strip('.csv') + '_' + file_id + '.png'
         plot_silhouette(instance, X, desc, file_name)
+        instance.groups = None
+        instance.centroids = None 
         print('Saved ' + file_name)
         
     for file_id, desc, instance in get_instances_xmeans(X):
@@ -370,9 +374,10 @@ for i, f in enumerate(files):
         instance, iterations = instance.train(X)
         print('finished training')
         print('done in', str(iterations), 'iterations')
-        
         file_name = 'output/reuters/' + f.split('/')[-1].strip('.csv') + '_' + file_id + '.png'
         plot_silhouette(instance, X, desc, file_name)
+        instance.groups = None
+        instance.centroids = None 
         print('Saved ' + file_name)
 
 print('finished')
