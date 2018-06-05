@@ -358,6 +358,7 @@ MIN_CENTROIDS = 1
 MAX_CENTROIDS = 10
 
 def get_instances_kmeans_reuters(X):
+    # Removed random initialization for execution performance
     return [
          #('1', 'KMeans euclidian_distance, random initialization', KMeans().with_euclidian_distance().initialize_random(CENTROIDS, X)),
          ('2', 'KMeans euclidian_distance, ++initialization', KMeans().with_euclidian_distance().initialize_plus_plus(CENTROIDS, X)),
