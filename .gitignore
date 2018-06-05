@@ -60,3 +60,4 @@ target/
 data/
 nohup.out
 data.zip
+.vscode
